@@ -24,6 +24,9 @@ try
         rem = (--BUFSZ) % characterSize;
 
     finput.reset(new CFile(source));
+    if(finput->getFileLen() <= 0)
+        return;
+
     foutput.reset(new CFile(dest, true));
     prepareDicts(enc);
 
@@ -117,7 +120,7 @@ void Censor<T>::checkBlock(const string& block)
     auto blocklen = block.length();
     auto charsz = sizeof(typename T::value_type);
 
-    while(spend < blocklen - 1)
+    while(spend < blocklen - 1 || spend == 0)
     {
         // points on the first space character after word
         posend = Encoder::getSpacePos(block, encoding, posbeg);
@@ -172,6 +175,8 @@ void Censor<T>::checkBlock(const string& block)
 template<class T>
 void Censor<T>::writeBom()
 {
+    if(encoding == nobom)
+        return;
     int bomsz = encoding & fBOMSize;
     string buf;
     offset += finput->ReadBuf(bomsz, offset, buf);

@@ -17,9 +17,12 @@ Encoding Encoder::getFileEncoding(const string &filename)
         fs.seekg(0, fs.beg);
 
         if(fileLenght < 2)
+        {
+            fs.close();
             return nobom;
+        }
 
-        const int BOMLEN = 4;
+        const int BOMLEN = min(fileLenght, 4);
         // reserve buffer
         ByteArray bom( new Byte[BOMLEN], default_delete<Byte[]>());
 
